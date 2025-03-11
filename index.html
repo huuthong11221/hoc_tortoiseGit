@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thử mùi ảo</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Scene hiển thị trực tiếp -->
+  <a-scene embedded>
+    <!-- Chai nước hoa 3D -->
+    <a-entity id="perfume" gltf-model="url(assets/perfume.glb)" scale="0.1 0.1 0.1" position="0 0 -1" rotation="0 0 0"></a-entity>
+    
+    <!-- Hiệu ứng khói/cánh hoa -->
+    <a-entity id="smoke" particle-system="preset: dust; texture: assets/smoke.png; particleCount: 50; size: 0.1; velocityValue: 0 0.1 0" position="0 0 -1"></a-entity>
+    
+    <!-- Âm thanh -->
+    <a-entity id="sound" sound="src: url(assets/sound.mp3); autoplay: true; loop: true"></a-entity>
+    
+    <!-- Camera mặc định của A-Frame -->
+    <a-entity camera look-controls position="0 1.6 0"></a-entity>
+  </a-scene>
+
+  <!-- Nút thử mùi -->
+  <button onclick="startScentSimulation()">Thử mùi ảo</button>
+  <div id="scent-description"></div>
+
+  <!-- Script điều khiển -->
+  <script>
+    function startScentSimulation() {
+      fetch('/api/scent/1') // Gọi API
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('scent-description').innerText = data.description;
+          if (data.scentGroup === 'floral') {
+            document.getElementById('smoke').setAttribute('particle-system', 'texture: assets/flower.png');
+          }
+        });
+    }
+
+    // Xoay mô hình để xem rõ hơn
+    setInterval(() => {
+      const perfume = document.getElementById('perfume');
+      const rotation = perfume.getAttribute('rotation');
+      rotation.y += 1; // Xoay quanh trục Y
+      perfume.setAttribute('rotation', rotation);
+    }, 20);
+  </script>
+</body>
+</html>
